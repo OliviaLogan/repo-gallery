@@ -3,6 +3,8 @@ const overview = document.querySelector(".overview");
 const repoList = document.querySelector(".repo-list");
 const allRepos = document.querySelector(".repos");
 const showRepoInfo = document.querySelector(".repo-data");
+const button = document.querySelector(".view-repos");
+const filterInput = document.querySelector(".filter-repos");
 const username = "OliviaLogan"
 
 const getProfile = async function () {
@@ -42,6 +44,7 @@ const displayRepos = function(repos) {
         repoTitle.classList.add("repo");
         repoTitle.innerHTML = `<h3>${repo.name}</h3>`;
         repoList.append(repoTitle);
+        filterInput.classList.remove("hide");
     }
 };
 
@@ -78,4 +81,26 @@ const displayRepoInfo = function(specificRepoInfo, languages) {
     showRepoInfo.append(repoInfoDiv);
     showRepoInfo.classList.remove("hide");
     allRepos.classList.add("hide");
+    button.classList.remove("hide");
 };
+
+button.addEventListener("click", function() {
+    allRepos.classList.remove("hide");
+    showRepoInfo.classList.add("hide");
+    button.classList.add("hide");
+});
+
+filterInput.addEventListener("input", function (e) {
+    const inputValue = e.target.value;
+    const searchText = inputValue.toLowerCase();
+    const repos = document.querySelectorAll(".repo");
+    for (const repo of repos) {
+        const repoValue = repo.innerText.toLowerCase();
+        if (repoValue.includes(searchText)) {
+            repo.classList.remove("hide");
+        } else {
+            repo.classList.add("hide");
+        }
+    }; 
+}); 
+

@@ -1,6 +1,8 @@
 /* Profile Information */
 const overview = document.querySelector(".overview");
 const repoList = document.querySelector(".repo-list");
+const allRepos = document.querySelector(".repos");
+const showRepoInfo = document.querySelector(".repo-data");
 const username = "OliviaLogan"
 
 const getProfile = async function () {
@@ -36,9 +38,44 @@ getRepos();
 
 const displayRepos = function(repos) {
     for (const repo of repos) {
-        const li = document.createElement("li");
-        li.classList.add("repo");
-        li.innerHTML = `<h3>${repo.name}</h3>`;
-        repoList.append(li);
+        const repoTitle = document.createElement("li");
+        repoTitle.classList.add("repo");
+        repoTitle.innerHTML = `<h3>${repo.name}</h3>`;
+        repoList.append(repoTitle);
     }
+};
+
+repoList.addEventListener("click", function (e) {
+    if (e.target.matches("h3")) {
+        const repoName = e.target.innerText;
+        specificRepoInfo(repoName);
+    }
+});
+
+const specificRepoInfo = async function (repoName) {
+    const specificRepoRequest = await fetch(`https://api.github.com/repos/${username}/${repoName}`);
+    const specificRepoInfo = await specificRepoRequest.json();
+    console.log(specificRepoInfo);
+    const fetchLanguages = await fetch(`https://api.github.com/repos/${username}/${repoName}/languages`);
+    const languageInfo = await fetchLanguages.json();
+    console.log(languageInfo);
+    let languages = [];
+    for (const key in languageInfo) {
+        languages.push(key);
+    };
+    console.log(languages);
+    displayRepoInfo(specificRepoInfo, languages);
+};
+
+const displayRepoInfo = function(specificRepoInfo, languages) {
+    showRepoInfo.innerHTML = "";
+    const repoInfoDiv = document.createElement("div");
+    repoInfoDiv.innerHTML = `<h3>Name: ${specificRepoInfo.name}</h3>
+    <p>Description: ${specificRepoInfo.description}</p>
+    <p>Default Branch: ${specificRepoInfo.default_branch}</p>
+    <p>Languages: ${languages.join(", ")}</p>
+    <a class="visit" href="${specificRepoInfo.svn_url}" target="_blank" rel="noreferrer noopener">View Repo on GitHub!</a>`;
+    showRepoInfo.append(repoInfoDiv);
+    showRepoInfo.classList.remove("hide");
+    allRepos.classList.add("hide");
 };
